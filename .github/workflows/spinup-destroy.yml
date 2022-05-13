@@ -14,7 +14,7 @@ jobs:
   setup-up-azure-resources:
     runs-on: ubuntu-latest
     
-    if: contains(github_event.pull_request.labels.*.name, 'spin up environment')
+    if: contains(github.event.pull_request.labels.*.name, 'spin up environment')
     
     steps:
       - name: Checkout Repo
@@ -45,7 +45,7 @@ jobs:
   destroy-azure-resources:
     runs-on: ubuntu-latest
     
-    if: contains(github_event.pull_request.labels.*.name, 'destroy environment')
+    if: contains(github.event.pull_request.labels.*.name, 'destroy environment')
     
     steps:
       - name: Checkout Repo
