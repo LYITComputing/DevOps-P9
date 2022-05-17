@@ -8,7 +8,7 @@ env:
   AZURE_RESOURCE_GROUP: cd-with-actions
   AZURE_APP_PLAN: actions-ttt-deployment
   AZURE_LOCATION: '"North Europe"'
-  AZURE_WEBAPP_NAME: docmilo-ttt-app
+  AZURE_WEBAPP_NAME: test-ttt-app
 
 jobs:
   setup-azurE-resources:
@@ -28,7 +28,7 @@ jobs:
       - name: Create Azure resource group
         if: success()
         run: |
-          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscriptions ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
           
       - name: Create Azure app service plan
         if: success()
@@ -45,21 +45,21 @@ jobs:
         run: |
           az webapp config container set --docker-custom-image-name nginx --docker-registry-server-password ${{secrets.REGISTRY_PASSWORD}} --docker-resgistry-server-url https://docker.pkg.github.com --docker-registry-server-user ${{github.actor}} --name${{env.AZURE_WEBAPP_NAME}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
           
-destroy-azure-resources:
-  runs-on: ubuntu-latest
+  destroy-azure-resources:
+    runs-on: ubuntu-latest
   
-  if: contains(github.event.pull_request.labels.*.name, 'destroy environment')
+    if: contains(github.event.pull_request.labels.*.name, 'destroy environment')
   
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       
-    - name: Azure login
-      uses: azure/login@v1
-      with:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
         
-    - name: destroy Azure environmnet
-      if: success()
-      run: |
-        az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}} --yes
+      - name: destroy Azure environmnet
+        if: success()
+        run: |
+          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}} --yes
